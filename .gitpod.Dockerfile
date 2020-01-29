@@ -1,5 +1,4 @@
-FROM gitpod/workspace-full-vnc
-                    
+FROM gitpod/workspace-full:latest
 USER gitpod
 
 # Install custom tools, runtime, etc. using apt-get
