@@ -9,7 +9,6 @@ import libclient
 
 sel = selectors.DefaultSelector()
 
-
 def create_request(action, value):
     if action == "search":
         return dict(
@@ -24,7 +23,6 @@ def create_request(action, value):
             content=bytes(action + value, encoding="utf-8"),
         )
 
-
 def start_connection(host, port, request):
     addr = (host, port)
     print("starting connection to", addr)
@@ -34,7 +32,6 @@ def start_connection(host, port, request):
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
     message = libclient.Message(sel, sock, addr, request)
     sel.register(sock, events, data=message)
-
 
 if len(sys.argv) != 5:
     print("usage:", sys.argv[0], "<host> <port> <action> <value>")
@@ -56,10 +53,8 @@ try:
                 print("[CLIENT] error: exception for", f"{message.addr}:\n{traceback.format_exc()}\n{e}")
                 message.close()
         # Check for a socket being monitored to continue.
-        if not sel.get_map(): 
+        if not sel.get_map():
             print("[CLIENT] status: closing due to lack of peers")
             break
-except KeyboardInterrupt:
-    print("caught keyboard interrupt, exiting")
-finally:
-    sel.close()
+except KeyboardInterrupt: print("caught keyboard interrupt, exiting")
+finally: sel.close()

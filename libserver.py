@@ -10,7 +10,6 @@ request_search = {
     "\U0001f436": "\U0001f43e Playing ball! \U0001f3d0",
 }
 
-
 class Message:
     def __init__(self, selector, sock, addr):
         self.selector = selector
@@ -58,8 +57,7 @@ class Message:
             else:
                 self._send_buffer = self._send_buffer[sent:]
                 # Close when the buffer is drained. The response has been sent.
-                if sent and not self._send_buffer:
-                    self.close()
+                # if sent and not self._send_buffer: self.close()
 
     def _json_encode(self, obj, encoding):
         return json.dumps(obj, ensure_ascii=False).encode(encoding)
@@ -138,13 +136,8 @@ class Message:
 
     def close(self):
         print("closing connection to", self.addr)
-        try:
-            self.selector.unregister(self.sock)
-        except Exception as e:
-            print(
-                f"error: selector.unregister() exception for",
-                f"{self.addr}: {repr(e)}",
-            )
+        try: self.selector.unregister(self.sock)
+        except Exception as e: print(f"error: selector.unregister() exception for", f"{self.addr}: {repr(e)}")
 
         try:
             self.sock.close()

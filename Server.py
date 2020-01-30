@@ -9,14 +9,12 @@ import libserver
 
 sel = selectors.DefaultSelector()
 
-
 def accept_wrapper(sock):
     conn, addr = sock.accept()  # Should be ready to read
     print("accepted connection from", addr)
     conn.setblocking(False)
     message = libserver.Message(sel, conn, addr)
     sel.register(conn, selectors.EVENT_READ, data=message)
-
 
 if len(sys.argv) != 3:
     print("usage:", sys.argv[0], "<host> <port>")

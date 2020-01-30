@@ -83,10 +83,10 @@ class Message:
 
     def process_events(self, mask):
         if mask & selectors.EVENT_READ:
-            print("reading")
+            print("reading, mask:", mask)
             self.read()
         if mask & selectors.EVENT_WRITE:
-            print("writing")
+            print("writing, mask:", mask)
             self.write()
 
     def read(self):
@@ -155,23 +155,15 @@ class Message:
     def process_jsonheader(self):
         hdrlen = self._jsonheader_len
         if len(self._recv_buffer) >= hdrlen:
-            self.jsonheader = self._json_decode(
-                self._recv_buffer[:hdrlen], "utf-8"
-            )
+            self.jsonheader = self._json_decode(self._recv_buffer[:hdrlen], "utf-8")
             self._recv_buffer = self._recv_buffer[hdrlen:]
-            for reqhdr in (
-                "byteorder",
-                "content-length",
-                "content-type",
-                "content-encoding",
-            ):
+            for reqhdr in ("byteorder", "content-length", "content-type","content-encoding"):
                 if reqhdr not in self.jsonheader:
                     raise ValueError(f'Missing required header "{reqhdr}".')
 
     def process_response(self):
         content_len = self.jsonheader["content-length"]
-        if not len(self._recv_buffer) >= content_len:
-            return
+        if not len(self._recv_buffer) >= content_len: return
         data = self._recv_buffer[:content_len]
         self._recv_buffer = self._recv_buffer[content_len:]
         if self.jsonheader["content-type"] == "text/json":
@@ -182,10 +174,7 @@ class Message:
         else:
             # Binary or unknown content-type
             self.response = data
-            print(
-                f'received {self.jsonheader["content-type"]} response from',
-                self.addr,
-            )
+            print(f'received {self.jsonheader["content-type"]} response from', self.addr)
             self._process_response_binary_content()
         # Close when response has been processed
-        self.close()
+        # self.close()

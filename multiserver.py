@@ -16,7 +16,6 @@ def accept_wrapper(sock):
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
     sel.register(conn, events, data=data)
 
-
 def service_connection(key, mask):
     sock = key.fileobj
     data = key.data
@@ -33,7 +32,6 @@ def service_connection(key, mask):
             print("echoing", repr(data.outb), "to", data.addr)
             sent = sock.send(data.outb)  # Should be ready to write
             data.outb = data.outb[sent:]
-
 
 if len(sys.argv) != 3:
     print("usage:", sys.argv[0], "<host> <port>")
