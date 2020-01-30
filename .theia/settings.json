@@ -3,7 +3,6 @@
    "editor.fastScrollSensitivity": 10,
    "editor.smoothScrolling": true,
    "editor.quickSuggestionsDelay": 1,
-   "editor.accessibilitySupport": "on",
    "extensions.showBuiltin": true,
    "workspace.preserveWindow": true
 }
