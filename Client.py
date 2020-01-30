@@ -52,6 +52,7 @@ try:
             except Exception as e:
                 print("[CLIENT] error: exception for", f"{message.addr}:\n{traceback.format_exc()}\n{e}")
                 message.close()
+        
         # Check for a socket being monitored to continue.
         if not sel.get_map():
             print("[CLIENT] status: closing due to lack of peers")

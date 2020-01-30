@@ -24,14 +24,10 @@ class Message:
 
     def _set_selector_events_mask(self, mode):
         """Set selector to listen for events: mode is 'r', 'w', or 'rw'."""
-        if mode == "r":
-            events = selectors.EVENT_READ
-        elif mode == "w":
-            events = selectors.EVENT_WRITE
-        elif mode == "rw":
-            events = selectors.EVENT_READ | selectors.EVENT_WRITE
-        else:
-            raise ValueError(f"Invalid events mask mode {repr(mode)}.")
+        if mode == "r": events = selectors.EVENT_READ
+        elif mode == "w": events = selectors.EVENT_WRITE
+        elif mode == "rw": events = selectors.EVENT_READ | selectors.EVENT_WRITE
+        else: raise ValueError(f"Invalid events mask mode {repr(mode)}.")
         self.selector.modify(self.sock, events, data=self)
 
     def _read(self):
