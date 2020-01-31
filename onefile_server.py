@@ -3,11 +3,31 @@ import sys, socket, selectors, traceback, threading, string
 class Server:
     def __init__(self, host, port):
         self.socket = socket.socket(so)
-        self.port = port
-        self.host = host
-        self.buffer = 1024
 
-        self.connections = []
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        self.connections = []
         self.addresses = []
 
         self.decode_utf8 = lambda data: data.decode("utf-8") # function to return decoded utf-8
