@@ -4,7 +4,7 @@ queue = Queue()
 
 class Server:
     def __init__(self, host, port):
-        self.socket = socket.socket() #(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket = None #socket.socket() #(socket.AF_INET, socket.SOCK_STREAM)
         self.port = port
         self.host = host
         self.buffer = 1024
@@ -42,8 +42,8 @@ class Server:
 
     def createSocket(self):
         try:
-            self.socket = socket.socket() #(socket.AF_INET, socket.SOCK_STREAM)
-            # self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.bindSocket()
         except socket.error as e: print(f"[ERROR]: {str(e)}")
     
@@ -51,7 +51,7 @@ class Server:
         try:
             print("Listening on port " + str(self.port))
             self.socket.bind((self.host, self.port))
-            self.socket.listen(20)
+            self.socket.listen(5)
             # self.acceptIncoming()
         except socket.error as e:
             print(f"[ERROR]: Error binding socket {str(e)} Retrying...")
@@ -69,7 +69,7 @@ class Server:
                 print("\n[+] Connected to: {} {}".format(address[0], address[2]))
             except socket.error:
                 print("[ERROR]: Problem accepting connections!")
-                # continue
+                continue
 
     def main(self):
         while True:

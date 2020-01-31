@@ -4,5 +4,8 @@
    "editor.smoothScrolling": true,
    "editor.quickSuggestionsDelay": 1,
    "extensions.showBuiltin": true,
-   "workspace.preserveWindow": true
+   "workspace.preserveWindow": true,
+   "workbench.colorTheme": "light",
+   "editor.autoSaveDelay": 50,
+   "editor.find.globalFindClipboard": true
 }
