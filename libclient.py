@@ -5,20 +5,25 @@ import io
 import struct
 
 class Message:
-    def __init__(self, selector, sock, addr, request):
+    def __init__(self, selector, sock, addr):
         self.selector = selector
         self.sock = sock
         self.addr = addr
-        self.request = request
         self._recv_buffer = b""
         self._send_buffer = b""
         self._request_queued = False
         self._jsonheader_len = None
         self.jsonheader = None
         self.response = None
-        self.server_rresponse = ""
+        self.server_response = ""
 
-        self._json_encode_ = lambda object, encoding: json.dumps(obj, ensure_ascii=False).encode(encoding)
+        self.request = dict(
+            type="text/json",
+            encoding="utf-8",
+            content=dict(action="search", value="ring")
+        )
+
+        self._json_encode_ = lambda json_object, encoding: json.dumps(json_object, ensure_ascii=False).encode(encoding)
 
     def _set_selector_events_mask(self, mode):
         """Set selector to listen for events: mode is 'r', 'w', or 'rw'."""
@@ -57,24 +62,23 @@ class Message:
             "content-length": len(content_bytes),
         }
         jsonheader_bytes = self._json_encode_(jsonheader, "utf-8")
-        message_hdr = struct.pack(">H", len(jsonheader_bytes))
-        message = message_hdr + jsonheader_bytes + content_bytes
+        message_header = struct.pack(">H", len(jsonheader_bytes))
+        message = message_header + jsonheader_bytes + content_bytes
         return message
 
     def _process_response_json_content(self):
         content = self.response
-        content2 = self.response.get("result")
-        result = content.get("result")
-        self.server_rresponse = result
-        print(f"[INFO]: got result: {result, content2}")
+        if content.get("new_client_encoding"): print(content.get("new_client_encoding"))
+        self.server_response = content.get("result")
+        print(f"[INFO]: deciphered: {self.server_response}")
 
     def _process_response_binary_content(self):
         content = self.response
-        self.server_rresponse = content
+        self.server_response = content
         print(f"[INFO]: got response: {repr(content)}")
         
     def get_server_response(self):
-        return self.server_rresponse
+        return self.server_response
     
     def process_events(self, mask):
         if mask & selectors.EVENT_READ:
@@ -87,8 +91,7 @@ class Message:
     def read(self):
         self._read()
 
-        if self._jsonheader_len is None:
-            self.process_protoheader()
+        if self._jsonheader_len is None: self.process_protoheader()
 
         if self._jsonheader_len is not None:
             if self.jsonheader is None:
@@ -130,10 +133,10 @@ class Message:
         else:
             req = {
                 "content_bytes": content,
-                "content_type": content_type,
+                "content_type": content_type, # binary data (application/octet-stream)
                 "content_encoding": content_encoding,
             }
-        message = self._create_message(**req)
+        message = self._create_message(**req) # Create a new message
         self._send_buffer += message
         self._request_queued = True
 
@@ -153,8 +156,8 @@ class Message:
                     raise ValueError(f'Missing required header "{reqhdr}".')
 
     def process_response(self):
-        content_len = self.jsonheader["content-length"]
-        if not len(self._recv_buffer) >= content_len: return
+        content_len = self.jsonheader["content-length"] # get the content length
+        if not len(self._recv_buffer) >= content_len: return # return if
         data = self._recv_buffer[:content_len]
         self._recv_buffer = self._recv_buffer[content_len:]
         if self.jsonheader["content-type"] == "text/json":
